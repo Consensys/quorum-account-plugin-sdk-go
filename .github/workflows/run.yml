@@ -58,9 +58,10 @@ jobs:
           mkdir -p proto && mkdir -p mock_proto && mkdir -p proto_common
           echo "protoc version: $(protoc --version)"
           protoc -I ${{ env.GRPC_DEFS_DIR }} -I ${{ env.GRPC_DEFS_DIR }}/vendor --go_out=plugins=grpc:proto_common ${{ env.GRPC_DEFS_DIR }}/init.proto
-          protoc -I ${{ env.GRPC_DEFS_DIR }} -I ${{ env.GRPC_DEFS_DIR }}/vendor --go_out=plugins=grpc:proto ${{ env.GRPC_DEFS_DIR }}/helloworld.proto
+          protoc -I ${{ env.GRPC_DEFS_DIR }} -I ${{ env.GRPC_DEFS_DIR }}/vendor --go_out=plugins=grpc:proto ${{ env.GRPC_DEFS_DIR }}/account.proto
           mockgen -package proto_common -destination proto_common/mock_initializer.go -source proto_common/init.pb.go
-          mockgen -package mock_proto   -destination mock_proto/mock_helloworld.go    -source proto/helloworld.pb.go
+          mockgen -package mock_proto   -destination mock_proto/mock_account.go    -source proto/account.pb.go
+#          mockgen -package mock_proto   -destination mock_proto/mock_account.go github.com/jpmorganchase/quorum-account-plugin-sdk-go/proto AccountServiceClient,AccountService_GetEventStreamClient,AccountServiceServer,AccountService_GetEventStreamServer
           goimports -w ./
           git add -A
           git status
