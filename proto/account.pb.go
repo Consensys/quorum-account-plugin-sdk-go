@@ -25,37 +25,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type GetEventStreamResponse_Event int32
-
-const (
-	GetEventStreamResponse_WALLET_ARRIVED GetEventStreamResponse_Event = 0
-	GetEventStreamResponse_WALLET_OPENED  GetEventStreamResponse_Event = 1
-	GetEventStreamResponse_WALLET_DROPPED GetEventStreamResponse_Event = 2
-	GetEventStreamResponse_PLUGIN_STARTED GetEventStreamResponse_Event = 3
-)
-
-var GetEventStreamResponse_Event_name = map[int32]string{
-	0: "WALLET_ARRIVED",
-	1: "WALLET_OPENED",
-	2: "WALLET_DROPPED",
-	3: "PLUGIN_STARTED",
-}
-
-var GetEventStreamResponse_Event_value = map[string]int32{
-	"WALLET_ARRIVED": 0,
-	"WALLET_OPENED":  1,
-	"WALLET_DROPPED": 2,
-	"PLUGIN_STARTED": 3,
-}
-
-func (x GetEventStreamResponse_Event) String() string {
-	return proto.EnumName(GetEventStreamResponse_Event_name, int32(x))
-}
-
-func (GetEventStreamResponse_Event) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{18, 0}
-}
-
+// Note: The Account type is used only in Response types.
+// All Request types which require an account to be specified use only the address to identify the account.
+// At the Quorum-level there is no knowledge of account URLs so the url field has been excluded from Requests to simplify the protocol.
 type Account struct {
 	Address              []byte   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Url                  string   `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
@@ -104,7 +76,6 @@ func (m *Account) GetUrl() string {
 }
 
 type StatusRequest struct {
-	WalletUrl            string   `protobuf:"bytes,1,opt,name=walletUrl,proto3" json:"walletUrl,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -134,13 +105,6 @@ func (m *StatusRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_StatusRequest proto.InternalMessageInfo
-
-func (m *StatusRequest) GetWalletUrl() string {
-	if m != nil {
-		return m.WalletUrl
-	}
-	return ""
-}
 
 type StatusResponse struct {
 	Status               string   `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
@@ -182,8 +146,7 @@ func (m *StatusResponse) GetStatus() string {
 }
 
 type OpenRequest struct {
-	WalletUrl            string   `protobuf:"bytes,1,opt,name=walletUrl,proto3" json:"walletUrl,omitempty"`
-	Passphrase           string   `protobuf:"bytes,2,opt,name=passphrase,proto3" json:"passphrase,omitempty"`
+	Passphrase           string   `protobuf:"bytes,1,opt,name=passphrase,proto3" json:"passphrase,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -213,13 +176,6 @@ func (m *OpenRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_OpenRequest proto.InternalMessageInfo
-
-func (m *OpenRequest) GetWalletUrl() string {
-	if m != nil {
-		return m.WalletUrl
-	}
-	return ""
-}
 
 func (m *OpenRequest) GetPassphrase() string {
 	if m != nil {
@@ -260,7 +216,6 @@ func (m *OpenResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_OpenResponse proto.InternalMessageInfo
 
 type CloseRequest struct {
-	WalletUrl            string   `protobuf:"bytes,1,opt,name=walletUrl,proto3" json:"walletUrl,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -290,13 +245,6 @@ func (m *CloseRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_CloseRequest proto.InternalMessageInfo
-
-func (m *CloseRequest) GetWalletUrl() string {
-	if m != nil {
-		return m.WalletUrl
-	}
-	return ""
-}
 
 type CloseResponse struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -330,7 +278,6 @@ func (m *CloseResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_CloseResponse proto.InternalMessageInfo
 
 type AccountsRequest struct {
-	WalletUrl            string   `protobuf:"bytes,1,opt,name=walletUrl,proto3" json:"walletUrl,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -360,13 +307,6 @@ func (m *AccountsRequest) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_AccountsRequest proto.InternalMessageInfo
-
-func (m *AccountsRequest) GetWalletUrl() string {
-	if m != nil {
-		return m.WalletUrl
-	}
-	return ""
-}
 
 type AccountsResponse struct {
 	Accounts             []*Account `protobuf:"bytes,1,rep,name=accounts,proto3" json:"accounts,omitempty"`
@@ -408,7 +348,7 @@ func (m *AccountsResponse) GetAccounts() []*Account {
 }
 
 type ContainsRequest struct {
-	Account              *Account `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Address              []byte   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -439,9 +379,9 @@ func (m *ContainsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ContainsRequest proto.InternalMessageInfo
 
-func (m *ContainsRequest) GetAccount() *Account {
+func (m *ContainsRequest) GetAddress() []byte {
 	if m != nil {
-		return m.Account
+		return m.Address
 	}
 	return nil
 }
@@ -485,384 +425,149 @@ func (m *ContainsResponse) GetIsContained() bool {
 	return false
 }
 
-type SignHashRequest struct {
-	Account              *Account `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	Hash                 []byte   `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+type SignRequest struct {
+	Address              []byte   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	ToSign               []byte   `protobuf:"bytes,2,opt,name=toSign,proto3" json:"toSign,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SignHashRequest) Reset()         { *m = SignHashRequest{} }
-func (m *SignHashRequest) String() string { return proto.CompactTextString(m) }
-func (*SignHashRequest) ProtoMessage()    {}
-func (*SignHashRequest) Descriptor() ([]byte, []int) {
+func (m *SignRequest) Reset()         { *m = SignRequest{} }
+func (m *SignRequest) String() string { return proto.CompactTextString(m) }
+func (*SignRequest) ProtoMessage()    {}
+func (*SignRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_8e28828dcb8d24f0, []int{11}
 }
 
-func (m *SignHashRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SignHashRequest.Unmarshal(m, b)
+func (m *SignRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SignRequest.Unmarshal(m, b)
 }
-func (m *SignHashRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SignHashRequest.Marshal(b, m, deterministic)
+func (m *SignRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SignRequest.Marshal(b, m, deterministic)
 }
-func (m *SignHashRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SignHashRequest.Merge(m, src)
+func (m *SignRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SignRequest.Merge(m, src)
 }
-func (m *SignHashRequest) XXX_Size() int {
-	return xxx_messageInfo_SignHashRequest.Size(m)
+func (m *SignRequest) XXX_Size() int {
+	return xxx_messageInfo_SignRequest.Size(m)
 }
-func (m *SignHashRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SignHashRequest.DiscardUnknown(m)
+func (m *SignRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SignRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SignHashRequest proto.InternalMessageInfo
+var xxx_messageInfo_SignRequest proto.InternalMessageInfo
 
-func (m *SignHashRequest) GetAccount() *Account {
+func (m *SignRequest) GetAddress() []byte {
 	if m != nil {
-		return m.Account
+		return m.Address
 	}
 	return nil
 }
 
-func (m *SignHashRequest) GetHash() []byte {
+func (m *SignRequest) GetToSign() []byte {
 	if m != nil {
-		return m.Hash
+		return m.ToSign
 	}
 	return nil
 }
 
-type SignHashResponse struct {
-	Result               []byte   `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SignHashResponse) Reset()         { *m = SignHashResponse{} }
-func (m *SignHashResponse) String() string { return proto.CompactTextString(m) }
-func (*SignHashResponse) ProtoMessage()    {}
-func (*SignHashResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{12}
-}
-
-func (m *SignHashResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SignHashResponse.Unmarshal(m, b)
-}
-func (m *SignHashResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SignHashResponse.Marshal(b, m, deterministic)
-}
-func (m *SignHashResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SignHashResponse.Merge(m, src)
-}
-func (m *SignHashResponse) XXX_Size() int {
-	return xxx_messageInfo_SignHashResponse.Size(m)
-}
-func (m *SignHashResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SignHashResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SignHashResponse proto.InternalMessageInfo
-
-func (m *SignHashResponse) GetResult() []byte {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-type SignTxRequest struct {
-	Account              *Account `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	RlpTx                []byte   `protobuf:"bytes,2,opt,name=rlpTx,proto3" json:"rlpTx,omitempty"`
-	ChainID              []byte   `protobuf:"bytes,3,opt,name=chainID,proto3" json:"chainID,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SignTxRequest) Reset()         { *m = SignTxRequest{} }
-func (m *SignTxRequest) String() string { return proto.CompactTextString(m) }
-func (*SignTxRequest) ProtoMessage()    {}
-func (*SignTxRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{13}
-}
-
-func (m *SignTxRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SignTxRequest.Unmarshal(m, b)
-}
-func (m *SignTxRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SignTxRequest.Marshal(b, m, deterministic)
-}
-func (m *SignTxRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SignTxRequest.Merge(m, src)
-}
-func (m *SignTxRequest) XXX_Size() int {
-	return xxx_messageInfo_SignTxRequest.Size(m)
-}
-func (m *SignTxRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SignTxRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SignTxRequest proto.InternalMessageInfo
-
-func (m *SignTxRequest) GetAccount() *Account {
-	if m != nil {
-		return m.Account
-	}
-	return nil
-}
-
-func (m *SignTxRequest) GetRlpTx() []byte {
-	if m != nil {
-		return m.RlpTx
-	}
-	return nil
-}
-
-func (m *SignTxRequest) GetChainID() []byte {
-	if m != nil {
-		return m.ChainID
-	}
-	return nil
-}
-
-type SignTxResponse struct {
-	RlpTx                []byte   `protobuf:"bytes,1,opt,name=rlpTx,proto3" json:"rlpTx,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *SignTxResponse) Reset()         { *m = SignTxResponse{} }
-func (m *SignTxResponse) String() string { return proto.CompactTextString(m) }
-func (*SignTxResponse) ProtoMessage()    {}
-func (*SignTxResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{14}
-}
-
-func (m *SignTxResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SignTxResponse.Unmarshal(m, b)
-}
-func (m *SignTxResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SignTxResponse.Marshal(b, m, deterministic)
-}
-func (m *SignTxResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SignTxResponse.Merge(m, src)
-}
-func (m *SignTxResponse) XXX_Size() int {
-	return xxx_messageInfo_SignTxResponse.Size(m)
-}
-func (m *SignTxResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SignTxResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SignTxResponse proto.InternalMessageInfo
-
-func (m *SignTxResponse) GetRlpTx() []byte {
-	if m != nil {
-		return m.RlpTx
-	}
-	return nil
-}
-
-type SignHashWithPassphraseRequest struct {
-	Account              *Account `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	Hash                 []byte   `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+type UnlockAndSignRequest struct {
+	Address              []byte   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	ToSign               []byte   `protobuf:"bytes,2,opt,name=toSign,proto3" json:"toSign,omitempty"`
 	Passphrase           string   `protobuf:"bytes,3,opt,name=passphrase,proto3" json:"passphrase,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SignHashWithPassphraseRequest) Reset()         { *m = SignHashWithPassphraseRequest{} }
-func (m *SignHashWithPassphraseRequest) String() string { return proto.CompactTextString(m) }
-func (*SignHashWithPassphraseRequest) ProtoMessage()    {}
-func (*SignHashWithPassphraseRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{15}
+func (m *UnlockAndSignRequest) Reset()         { *m = UnlockAndSignRequest{} }
+func (m *UnlockAndSignRequest) String() string { return proto.CompactTextString(m) }
+func (*UnlockAndSignRequest) ProtoMessage()    {}
+func (*UnlockAndSignRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8e28828dcb8d24f0, []int{12}
 }
 
-func (m *SignHashWithPassphraseRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SignHashWithPassphraseRequest.Unmarshal(m, b)
+func (m *UnlockAndSignRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UnlockAndSignRequest.Unmarshal(m, b)
 }
-func (m *SignHashWithPassphraseRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SignHashWithPassphraseRequest.Marshal(b, m, deterministic)
+func (m *UnlockAndSignRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UnlockAndSignRequest.Marshal(b, m, deterministic)
 }
-func (m *SignHashWithPassphraseRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SignHashWithPassphraseRequest.Merge(m, src)
+func (m *UnlockAndSignRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UnlockAndSignRequest.Merge(m, src)
 }
-func (m *SignHashWithPassphraseRequest) XXX_Size() int {
-	return xxx_messageInfo_SignHashWithPassphraseRequest.Size(m)
+func (m *UnlockAndSignRequest) XXX_Size() int {
+	return xxx_messageInfo_UnlockAndSignRequest.Size(m)
 }
-func (m *SignHashWithPassphraseRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SignHashWithPassphraseRequest.DiscardUnknown(m)
+func (m *UnlockAndSignRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UnlockAndSignRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SignHashWithPassphraseRequest proto.InternalMessageInfo
+var xxx_messageInfo_UnlockAndSignRequest proto.InternalMessageInfo
 
-func (m *SignHashWithPassphraseRequest) GetAccount() *Account {
+func (m *UnlockAndSignRequest) GetAddress() []byte {
 	if m != nil {
-		return m.Account
+		return m.Address
 	}
 	return nil
 }
 
-func (m *SignHashWithPassphraseRequest) GetHash() []byte {
+func (m *UnlockAndSignRequest) GetToSign() []byte {
 	if m != nil {
-		return m.Hash
+		return m.ToSign
 	}
 	return nil
 }
 
-func (m *SignHashWithPassphraseRequest) GetPassphrase() string {
+func (m *UnlockAndSignRequest) GetPassphrase() string {
 	if m != nil {
 		return m.Passphrase
 	}
 	return ""
 }
 
-type SignTxWithPassphraseRequest struct {
-	Account              *Account `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	RlpTx                []byte   `protobuf:"bytes,2,opt,name=rlpTx,proto3" json:"rlpTx,omitempty"`
-	ChainID              []byte   `protobuf:"bytes,3,opt,name=chainID,proto3" json:"chainID,omitempty"`
-	Passphrase           string   `protobuf:"bytes,4,opt,name=passphrase,proto3" json:"passphrase,omitempty"`
+type SignResponse struct {
+	Sig                  []byte   `protobuf:"bytes,1,opt,name=sig,proto3" json:"sig,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SignTxWithPassphraseRequest) Reset()         { *m = SignTxWithPassphraseRequest{} }
-func (m *SignTxWithPassphraseRequest) String() string { return proto.CompactTextString(m) }
-func (*SignTxWithPassphraseRequest) ProtoMessage()    {}
-func (*SignTxWithPassphraseRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{16}
+func (m *SignResponse) Reset()         { *m = SignResponse{} }
+func (m *SignResponse) String() string { return proto.CompactTextString(m) }
+func (*SignResponse) ProtoMessage()    {}
+func (*SignResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8e28828dcb8d24f0, []int{13}
 }
 
-func (m *SignTxWithPassphraseRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SignTxWithPassphraseRequest.Unmarshal(m, b)
+func (m *SignResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SignResponse.Unmarshal(m, b)
 }
-func (m *SignTxWithPassphraseRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SignTxWithPassphraseRequest.Marshal(b, m, deterministic)
+func (m *SignResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SignResponse.Marshal(b, m, deterministic)
 }
-func (m *SignTxWithPassphraseRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SignTxWithPassphraseRequest.Merge(m, src)
+func (m *SignResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SignResponse.Merge(m, src)
 }
-func (m *SignTxWithPassphraseRequest) XXX_Size() int {
-	return xxx_messageInfo_SignTxWithPassphraseRequest.Size(m)
+func (m *SignResponse) XXX_Size() int {
+	return xxx_messageInfo_SignResponse.Size(m)
 }
-func (m *SignTxWithPassphraseRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SignTxWithPassphraseRequest.DiscardUnknown(m)
+func (m *SignResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SignResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SignTxWithPassphraseRequest proto.InternalMessageInfo
+var xxx_messageInfo_SignResponse proto.InternalMessageInfo
 
-func (m *SignTxWithPassphraseRequest) GetAccount() *Account {
+func (m *SignResponse) GetSig() []byte {
 	if m != nil {
-		return m.Account
+		return m.Sig
 	}
 	return nil
-}
-
-func (m *SignTxWithPassphraseRequest) GetRlpTx() []byte {
-	if m != nil {
-		return m.RlpTx
-	}
-	return nil
-}
-
-func (m *SignTxWithPassphraseRequest) GetChainID() []byte {
-	if m != nil {
-		return m.ChainID
-	}
-	return nil
-}
-
-func (m *SignTxWithPassphraseRequest) GetPassphrase() string {
-	if m != nil {
-		return m.Passphrase
-	}
-	return ""
-}
-
-type GetEventStreamRequest struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *GetEventStreamRequest) Reset()         { *m = GetEventStreamRequest{} }
-func (m *GetEventStreamRequest) String() string { return proto.CompactTextString(m) }
-func (*GetEventStreamRequest) ProtoMessage()    {}
-func (*GetEventStreamRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{17}
-}
-
-func (m *GetEventStreamRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetEventStreamRequest.Unmarshal(m, b)
-}
-func (m *GetEventStreamRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetEventStreamRequest.Marshal(b, m, deterministic)
-}
-func (m *GetEventStreamRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetEventStreamRequest.Merge(m, src)
-}
-func (m *GetEventStreamRequest) XXX_Size() int {
-	return xxx_messageInfo_GetEventStreamRequest.Size(m)
-}
-func (m *GetEventStreamRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetEventStreamRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_GetEventStreamRequest proto.InternalMessageInfo
-
-type GetEventStreamResponse struct {
-	Event                GetEventStreamResponse_Event `protobuf:"varint,1,opt,name=event,proto3,enum=proto.GetEventStreamResponse_Event" json:"event,omitempty"`
-	WalletUrl            string                       `protobuf:"bytes,2,opt,name=walletUrl,proto3" json:"walletUrl,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}                     `json:"-"`
-	XXX_unrecognized     []byte                       `json:"-"`
-	XXX_sizecache        int32                        `json:"-"`
-}
-
-func (m *GetEventStreamResponse) Reset()         { *m = GetEventStreamResponse{} }
-func (m *GetEventStreamResponse) String() string { return proto.CompactTextString(m) }
-func (*GetEventStreamResponse) ProtoMessage()    {}
-func (*GetEventStreamResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{18}
-}
-
-func (m *GetEventStreamResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetEventStreamResponse.Unmarshal(m, b)
-}
-func (m *GetEventStreamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetEventStreamResponse.Marshal(b, m, deterministic)
-}
-func (m *GetEventStreamResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetEventStreamResponse.Merge(m, src)
-}
-func (m *GetEventStreamResponse) XXX_Size() int {
-	return xxx_messageInfo_GetEventStreamResponse.Size(m)
-}
-func (m *GetEventStreamResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetEventStreamResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_GetEventStreamResponse proto.InternalMessageInfo
-
-func (m *GetEventStreamResponse) GetEvent() GetEventStreamResponse_Event {
-	if m != nil {
-		return m.Event
-	}
-	return GetEventStreamResponse_WALLET_ARRIVED
-}
-
-func (m *GetEventStreamResponse) GetWalletUrl() string {
-	if m != nil {
-		return m.WalletUrl
-	}
-	return ""
 }
 
 type TimedUnlockRequest struct {
-	Account              *Account `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Address              []byte   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	Duration             int64    `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -874,7 +579,7 @@ func (m *TimedUnlockRequest) Reset()         { *m = TimedUnlockRequest{} }
 func (m *TimedUnlockRequest) String() string { return proto.CompactTextString(m) }
 func (*TimedUnlockRequest) ProtoMessage()    {}
 func (*TimedUnlockRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{19}
+	return fileDescriptor_8e28828dcb8d24f0, []int{14}
 }
 
 func (m *TimedUnlockRequest) XXX_Unmarshal(b []byte) error {
@@ -895,9 +600,9 @@ func (m *TimedUnlockRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_TimedUnlockRequest proto.InternalMessageInfo
 
-func (m *TimedUnlockRequest) GetAccount() *Account {
+func (m *TimedUnlockRequest) GetAddress() []byte {
 	if m != nil {
-		return m.Account
+		return m.Address
 	}
 	return nil
 }
@@ -926,7 +631,7 @@ func (m *TimedUnlockResponse) Reset()         { *m = TimedUnlockResponse{} }
 func (m *TimedUnlockResponse) String() string { return proto.CompactTextString(m) }
 func (*TimedUnlockResponse) ProtoMessage()    {}
 func (*TimedUnlockResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{20}
+	return fileDescriptor_8e28828dcb8d24f0, []int{15}
 }
 
 func (m *TimedUnlockResponse) XXX_Unmarshal(b []byte) error {
@@ -948,7 +653,7 @@ func (m *TimedUnlockResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_TimedUnlockResponse proto.InternalMessageInfo
 
 type LockRequest struct {
-	Account              *Account `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	Address              []byte   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -958,7 +663,7 @@ func (m *LockRequest) Reset()         { *m = LockRequest{} }
 func (m *LockRequest) String() string { return proto.CompactTextString(m) }
 func (*LockRequest) ProtoMessage()    {}
 func (*LockRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{21}
+	return fileDescriptor_8e28828dcb8d24f0, []int{16}
 }
 
 func (m *LockRequest) XXX_Unmarshal(b []byte) error {
@@ -979,9 +684,9 @@ func (m *LockRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_LockRequest proto.InternalMessageInfo
 
-func (m *LockRequest) GetAccount() *Account {
+func (m *LockRequest) GetAddress() []byte {
 	if m != nil {
-		return m.Account
+		return m.Address
 	}
 	return nil
 }
@@ -996,7 +701,7 @@ func (m *LockResponse) Reset()         { *m = LockResponse{} }
 func (m *LockResponse) String() string { return proto.CompactTextString(m) }
 func (*LockResponse) ProtoMessage()    {}
 func (*LockResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{22}
+	return fileDescriptor_8e28828dcb8d24f0, []int{17}
 }
 
 func (m *LockResponse) XXX_Unmarshal(b []byte) error {
@@ -1028,7 +733,7 @@ func (m *NewAccountRequest) Reset()         { *m = NewAccountRequest{} }
 func (m *NewAccountRequest) String() string { return proto.CompactTextString(m) }
 func (*NewAccountRequest) ProtoMessage()    {}
 func (*NewAccountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{23}
+	return fileDescriptor_8e28828dcb8d24f0, []int{18}
 }
 
 func (m *NewAccountRequest) XXX_Unmarshal(b []byte) error {
@@ -1067,7 +772,7 @@ func (m *NewAccountResponse) Reset()         { *m = NewAccountResponse{} }
 func (m *NewAccountResponse) String() string { return proto.CompactTextString(m) }
 func (*NewAccountResponse) ProtoMessage()    {}
 func (*NewAccountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{24}
+	return fileDescriptor_8e28828dcb8d24f0, []int{19}
 }
 
 func (m *NewAccountResponse) XXX_Unmarshal(b []byte) error {
@@ -1107,7 +812,7 @@ func (m *ImportRawKeyRequest) Reset()         { *m = ImportRawKeyRequest{} }
 func (m *ImportRawKeyRequest) String() string { return proto.CompactTextString(m) }
 func (*ImportRawKeyRequest) ProtoMessage()    {}
 func (*ImportRawKeyRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{25}
+	return fileDescriptor_8e28828dcb8d24f0, []int{20}
 }
 
 func (m *ImportRawKeyRequest) XXX_Unmarshal(b []byte) error {
@@ -1153,7 +858,7 @@ func (m *ImportRawKeyResponse) Reset()         { *m = ImportRawKeyResponse{} }
 func (m *ImportRawKeyResponse) String() string { return proto.CompactTextString(m) }
 func (*ImportRawKeyResponse) ProtoMessage()    {}
 func (*ImportRawKeyResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8e28828dcb8d24f0, []int{26}
+	return fileDescriptor_8e28828dcb8d24f0, []int{21}
 }
 
 func (m *ImportRawKeyResponse) XXX_Unmarshal(b []byte) error {
@@ -1182,7 +887,6 @@ func (m *ImportRawKeyResponse) GetAccount() *Account {
 }
 
 func init() {
-	proto.RegisterEnum("proto.GetEventStreamResponse_Event", GetEventStreamResponse_Event_name, GetEventStreamResponse_Event_value)
 	proto.RegisterType((*Account)(nil), "proto.Account")
 	proto.RegisterType((*StatusRequest)(nil), "proto.StatusRequest")
 	proto.RegisterType((*StatusResponse)(nil), "proto.StatusResponse")
@@ -1194,14 +898,9 @@ func init() {
 	proto.RegisterType((*AccountsResponse)(nil), "proto.AccountsResponse")
 	proto.RegisterType((*ContainsRequest)(nil), "proto.ContainsRequest")
 	proto.RegisterType((*ContainsResponse)(nil), "proto.ContainsResponse")
-	proto.RegisterType((*SignHashRequest)(nil), "proto.SignHashRequest")
-	proto.RegisterType((*SignHashResponse)(nil), "proto.SignHashResponse")
-	proto.RegisterType((*SignTxRequest)(nil), "proto.SignTxRequest")
-	proto.RegisterType((*SignTxResponse)(nil), "proto.SignTxResponse")
-	proto.RegisterType((*SignHashWithPassphraseRequest)(nil), "proto.SignHashWithPassphraseRequest")
-	proto.RegisterType((*SignTxWithPassphraseRequest)(nil), "proto.SignTxWithPassphraseRequest")
-	proto.RegisterType((*GetEventStreamRequest)(nil), "proto.GetEventStreamRequest")
-	proto.RegisterType((*GetEventStreamResponse)(nil), "proto.GetEventStreamResponse")
+	proto.RegisterType((*SignRequest)(nil), "proto.SignRequest")
+	proto.RegisterType((*UnlockAndSignRequest)(nil), "proto.UnlockAndSignRequest")
+	proto.RegisterType((*SignResponse)(nil), "proto.SignResponse")
 	proto.RegisterType((*TimedUnlockRequest)(nil), "proto.TimedUnlockRequest")
 	proto.RegisterType((*TimedUnlockResponse)(nil), "proto.TimedUnlockResponse")
 	proto.RegisterType((*LockRequest)(nil), "proto.LockRequest")
@@ -1215,62 +914,45 @@ func init() {
 func init() { proto.RegisterFile("account.proto", fileDescriptor_8e28828dcb8d24f0) }
 
 var fileDescriptor_8e28828dcb8d24f0 = []byte{
-	// 866 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x6d, 0x6f, 0xe2, 0x46,
-	0x10, 0xae, 0x21, 0x04, 0x32, 0x80, 0x71, 0x36, 0x84, 0x10, 0x27, 0xa9, 0xa2, 0x6d, 0x55, 0xa1,
-	0xa8, 0x4d, 0x2a, 0xda, 0xa8, 0xaa, 0x22, 0xa5, 0x45, 0x01, 0xa5, 0x28, 0x28, 0x50, 0x43, 0x12,
-	0xf5, 0x53, 0xe4, 0xc2, 0x36, 0x58, 0x75, 0x6c, 0x6a, 0x9b, 0x90, 0x7e, 0xb8, 0xdf, 0x71, 0xd2,
-	0xfd, 0xa3, 0xfb, 0x57, 0x27, 0xdb, 0xe3, 0x77, 0x73, 0x82, 0xbb, 0xfb, 0x04, 0xfb, 0xcc, 0xdb,
-	0xe3, 0xd9, 0xd9, 0x67, 0xa0, 0x2c, 0x8f, 0xc7, 0xfa, 0x5c, 0xb3, 0x4e, 0x67, 0x86, 0x6e, 0xe9,
-	0x24, 0xe7, 0xfc, 0xd0, 0x73, 0xc8, 0xb7, 0x5c, 0x9c, 0xd4, 0x21, 0x2f, 0x4f, 0x26, 0x06, 0x33,
-	0xcd, 0x3a, 0x77, 0xcc, 0x35, 0x4a, 0x92, 0x77, 0x24, 0x02, 0x64, 0xe7, 0x86, 0x5a, 0xcf, 0x1c,
-	0x73, 0x8d, 0x2d, 0xc9, 0xfe, 0x4b, 0x7f, 0x80, 0xf2, 0xd0, 0x92, 0xad, 0xb9, 0x29, 0xb1, 0xff,
-	0xe6, 0xcc, 0xb4, 0xc8, 0x21, 0x6c, 0x2d, 0x64, 0x55, 0x65, 0xd6, 0x9d, 0xa1, 0x3a, 0xe1, 0x5b,
-	0x52, 0x00, 0xd0, 0x06, 0xf0, 0x9e, 0xbb, 0x39, 0xd3, 0x35, 0x93, 0x91, 0x1a, 0x6c, 0x9a, 0x0e,
-	0x82, 0xce, 0x78, 0xa2, 0x37, 0x50, 0xec, 0xcf, 0x98, 0xb6, 0x52, 0x5a, 0xf2, 0x35, 0xc0, 0x4c,
-	0x36, 0xcd, 0xd9, 0xd4, 0x90, 0x4d, 0x86, 0xf4, 0x42, 0x08, 0xe5, 0xa1, 0xe4, 0x26, 0x73, 0x8b,
-	0xd2, 0xef, 0xa1, 0x74, 0xa5, 0xea, 0x26, 0x5b, 0x8d, 0x74, 0x05, 0xca, 0xe8, 0x8d, 0xe1, 0x67,
-	0x50, 0xc1, 0x5e, 0xad, 0xf8, 0xd9, 0x97, 0x20, 0x04, 0x01, 0xf8, 0xe1, 0x27, 0x50, 0xc0, 0x8b,
-	0xb0, 0x3f, 0x3d, 0xdb, 0x28, 0x36, 0x79, 0xf7, 0x46, 0x4e, 0xd1, 0x55, 0xf2, 0xed, 0xf4, 0x02,
-	0x2a, 0x57, 0xba, 0x66, 0xc9, 0x8a, 0xe6, 0x17, 0x6c, 0x40, 0x1e, 0xcd, 0x4e, 0xb9, 0x64, 0xb4,
-	0x67, 0xa6, 0x3f, 0x83, 0x10, 0x04, 0x63, 0xf1, 0x63, 0x28, 0x2a, 0x26, 0xa2, 0x6c, 0xe2, 0x64,
-	0x28, 0x48, 0x61, 0x88, 0xf6, 0xa1, 0x32, 0x54, 0x9e, 0xb4, 0x3f, 0x64, 0x73, 0xba, 0x76, 0x49,
-	0x42, 0x60, 0x63, 0x2a, 0x9b, 0x53, 0xe7, 0x26, 0x4a, 0x92, 0xf3, 0x9f, 0x9e, 0x80, 0x10, 0x24,
-	0x0c, 0x2e, 0xdf, 0x60, 0xe6, 0x5c, 0xb5, 0x70, 0xd0, 0xf0, 0x44, 0x15, 0x28, 0xdb, 0xbe, 0xa3,
-	0xd7, 0xf5, 0x4b, 0x57, 0x21, 0x67, 0xa8, 0xb3, 0xd1, 0x2b, 0xd6, 0x76, 0x0f, 0xf6, 0x48, 0x8f,
-	0xa7, 0xb2, 0xa2, 0x75, 0xdb, 0xf5, 0xac, 0x3b, 0xd2, 0x78, 0xa4, 0xdf, 0x01, 0xef, 0x95, 0x42,
-	0x52, 0x7e, 0x06, 0x2e, 0x94, 0x81, 0xbe, 0x81, 0x23, 0x8f, 0xfe, 0x83, 0x62, 0x4d, 0x07, 0xfe,
-	0x70, 0x7d, 0x91, 0xee, 0xc4, 0x26, 0x38, 0x9b, 0x98, 0xe0, 0xb7, 0x1c, 0x1c, 0xb8, 0x3c, 0x3f,
-	0xb7, 0xfa, 0x9a, 0x0d, 0x8a, 0x31, 0xdb, 0x48, 0x30, 0xdb, 0x83, 0xdd, 0x6b, 0x66, 0x75, 0x5e,
-	0x98, 0x66, 0x0d, 0x2d, 0x83, 0xc9, 0xcf, 0x48, 0x89, 0xbe, 0xe7, 0xa0, 0x16, 0xb7, 0x60, 0x8b,
-	0x7f, 0x85, 0x1c, 0xb3, 0x61, 0x87, 0x2b, 0xdf, 0xfc, 0x06, 0xb9, 0xa6, 0x7b, 0x9f, 0x3a, 0x98,
-	0xe4, 0x46, 0x44, 0x1f, 0x5a, 0x26, 0xfe, 0xd0, 0xee, 0x21, 0xe7, 0x78, 0x13, 0x02, 0xfc, 0x43,
-	0xab, 0xd7, 0xeb, 0x8c, 0x1e, 0x5b, 0x92, 0xd4, 0xbd, 0xef, 0xb4, 0x85, 0xaf, 0xc8, 0x36, 0x94,
-	0x11, 0xeb, 0x0f, 0x3a, 0xb7, 0x9d, 0xb6, 0xc0, 0x85, 0xdc, 0xda, 0x52, 0x7f, 0x30, 0xe8, 0xb4,
-	0x85, 0x8c, 0x8d, 0x0d, 0x7a, 0x77, 0xd7, 0xdd, 0xdb, 0xc7, 0xe1, 0xa8, 0x25, 0x8d, 0x3a, 0x6d,
-	0x21, 0x4b, 0x5f, 0x80, 0x8c, 0x94, 0x67, 0x36, 0xb9, 0xd3, 0x54, 0x7d, 0xfc, 0xef, 0xfa, 0x4d,
-	0x17, 0xa1, 0x60, 0xb7, 0x6c, 0xa1, 0x1b, 0x13, 0x24, 0xed, 0x9f, 0x6d, 0xdb, 0x64, 0x6e, 0xc8,
-	0x96, 0xa2, 0x6b, 0x4e, 0xef, 0xb3, 0x92, 0x7f, 0xa6, 0xbb, 0xb0, 0x13, 0xa9, 0x8b, 0x02, 0xf4,
-	0x0b, 0x14, 0x7b, 0x9f, 0xc2, 0xc3, 0x16, 0xc2, 0x5e, 0x38, 0xd1, 0x6f, 0xb0, 0x7d, 0xcb, 0x16,
-	0x9e, 0x1b, 0xa6, 0x3b, 0x01, 0x41, 0xf3, 0xc1, 0x2b, 0x5d, 0xfb, 0x47, 0x79, 0xc2, 0xb7, 0x90,
-	0xc0, 0xe9, 0x25, 0x90, 0x70, 0x02, 0xbc, 0xdf, 0xd5, 0x09, 0xfd, 0x05, 0x3b, 0xdd, 0xe7, 0x99,
-	0x6e, 0x58, 0x92, 0xbc, 0xb8, 0x61, 0xff, 0x7b, 0x14, 0x6c, 0x61, 0x70, 0x00, 0x6f, 0x2b, 0xb8,
-	0xa7, 0x54, 0x6a, 0x99, 0x25, 0xd4, 0x7e, 0x87, 0x6a, 0x34, 0xf5, 0xba, 0xe4, 0x9a, 0xef, 0xf2,
-	0xc0, 0x23, 0x38, 0x64, 0xc6, 0x8b, 0x32, 0x66, 0xe4, 0x1c, 0x36, 0xdd, 0x05, 0x46, 0xaa, 0x18,
-	0x15, 0x59, 0x7f, 0xe2, 0x6e, 0x0c, 0xc5, 0x9a, 0x67, 0xb0, 0x61, 0x2f, 0x20, 0x42, 0xd0, 0x1c,
-	0x5a, 0x6d, 0xe2, 0x4e, 0x04, 0xc3, 0x80, 0x26, 0xe4, 0x9c, 0x9d, 0x43, 0x3c, 0x6b, 0x78, 0x5f,
-	0x89, 0xd5, 0x28, 0x88, 0x31, 0x17, 0x50, 0xf0, 0xb6, 0x0c, 0xa9, 0x45, 0xbf, 0xc9, 0xe7, 0xb7,
-	0x97, 0xc0, 0x83, 0x60, 0x6f, 0x4b, 0xf8, 0xc1, 0xb1, 0x9d, 0xe3, 0x07, 0x27, 0xd6, 0xc9, 0x05,
-	0x14, 0x3c, 0x71, 0xf4, 0x83, 0x63, 0xdb, 0xc3, 0x0f, 0x4e, 0x2c, 0x01, 0xbb, 0xa5, 0x8e, 0xb2,
-	0x05, 0x2d, 0x0d, 0x6b, 0x7f, 0xd0, 0xd2, 0xa8, 0x4c, 0x3f, 0x40, 0x2d, 0x5d, 0x90, 0xc9, 0xb7,
-	0xb1, 0x4a, 0xa9, 0x8a, 0xb9, 0x9c, 0xcf, 0x9f, 0x50, 0x4d, 0x53, 0x5a, 0x42, 0x23, 0x3c, 0xd2,
-	0x93, 0x2e, 0xe1, 0xda, 0x07, 0x3e, 0xaa, 0x6d, 0xe4, 0x70, 0x89, 0xe4, 0xb9, 0x69, 0x8e, 0x3e,
-	0x2a, 0x88, 0x3f, 0x72, 0xa4, 0x0d, 0xc5, 0x90, 0x2e, 0x90, 0x7d, 0xf4, 0x4f, 0x6a, 0x94, 0x28,
-	0xa6, 0x99, 0x82, 0xa9, 0xb4, 0xd5, 0xc0, 0x9f, 0xca, 0x90, 0xa6, 0xf8, 0x53, 0x19, 0x96, 0x0b,
-	0xd2, 0x02, 0x08, 0x5e, 0x3b, 0xa9, 0xa3, 0x4b, 0x42, 0x41, 0xc4, 0xfd, 0x14, 0x0b, 0xa6, 0xb8,
-	0x86, 0x52, 0xf8, 0x55, 0x12, 0x8f, 0x5f, 0x8a, 0x0a, 0x88, 0x07, 0xa9, 0x36, 0x37, 0xd1, 0xdf,
-	0x9b, 0x8e, 0xed, 0xa7, 0x0f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xb9, 0xef, 0xca, 0x54, 0xcf, 0x0a,
-	0x00, 0x00,
+	// 607 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x54, 0x5b, 0x6f, 0xd3, 0x30,
+	0x14, 0x56, 0xd7, 0xf5, 0xb2, 0x93, 0xde, 0xe6, 0x76, 0xa5, 0xcb, 0x24, 0x54, 0xf9, 0x85, 0x6a,
+	0x88, 0x4d, 0x2a, 0xec, 0x09, 0x69, 0xa3, 0x2a, 0x12, 0x42, 0x4c, 0x20, 0xa5, 0xf0, 0xc0, 0x63,
+	0x68, 0xbc, 0x2d, 0xa2, 0x8b, 0x43, 0x9c, 0x52, 0xf1, 0x63, 0xf8, 0xaf, 0xc8, 0xce, 0xb1, 0xeb,
+	0x34, 0x99, 0x06, 0xe2, 0x29, 0x39, 0xdf, 0xb9, 0x7d, 0xc7, 0x3e, 0x9f, 0xa1, 0xed, 0x2f, 0x97,
+	0x7c, 0x1d, 0xa5, 0x67, 0x71, 0xc2, 0x53, 0x4e, 0x6a, 0xea, 0x43, 0x2f, 0xa0, 0x31, 0xcb, 0x70,
+	0x32, 0x82, 0x86, 0x1f, 0x04, 0x09, 0x13, 0x62, 0x54, 0x19, 0x57, 0x26, 0x2d, 0x4f, 0x9b, 0xa4,
+	0x07, 0xd5, 0x75, 0xb2, 0x1a, 0xed, 0x8d, 0x2b, 0x93, 0x03, 0x4f, 0xfe, 0xd2, 0x2e, 0xb4, 0x17,
+	0xa9, 0x9f, 0xae, 0x85, 0xc7, 0x7e, 0xac, 0x99, 0x48, 0xe9, 0x04, 0x3a, 0x1a, 0x10, 0x31, 0x8f,
+	0x04, 0x23, 0x43, 0xa8, 0x0b, 0x85, 0xa8, 0x6a, 0x07, 0x1e, 0x5a, 0xf4, 0x05, 0x38, 0x9f, 0x62,
+	0x16, 0x61, 0x22, 0x79, 0x0a, 0x10, 0xfb, 0x42, 0xc4, 0x77, 0x89, 0x2f, 0x18, 0x86, 0x5a, 0x08,
+	0xed, 0x40, 0x2b, 0x0b, 0xcf, 0xca, 0x4a, 0x7b, 0xbe, 0xe2, 0x82, 0xe9, 0xc6, 0x5d, 0x68, 0xa3,
+	0x8d, 0x01, 0x87, 0xd0, 0xc5, 0x89, 0x0c, 0xb9, 0x4b, 0xe8, 0x6d, 0x21, 0xa4, 0x77, 0x0a, 0x4d,
+	0x3c, 0x10, 0x49, 0xb0, 0x3a, 0x71, 0xa6, 0x9d, 0xec, 0x64, 0xce, 0x30, 0xd4, 0x33, 0x7e, 0xfa,
+	0x1c, 0xba, 0x73, 0x1e, 0xa5, 0x7e, 0x18, 0xe9, 0x92, 0x0f, 0x1f, 0x16, 0x7d, 0x05, 0xbd, 0x6d,
+	0x30, 0x36, 0x1b, 0x83, 0x13, 0x0a, 0x44, 0x59, 0xa0, 0x32, 0x9a, 0x9e, 0x0d, 0xd1, 0x2b, 0x70,
+	0x16, 0xe1, 0x6d, 0xf4, 0x68, 0x79, 0x79, 0xac, 0x29, 0x97, 0xa1, 0xea, 0x3a, 0x5a, 0x1e, 0x5a,
+	0xf4, 0x0e, 0x06, 0x5f, 0xa2, 0x15, 0x5f, 0x7e, 0x9f, 0x45, 0xc1, 0x7f, 0x55, 0xda, 0xb9, 0x91,
+	0x6a, 0xe1, 0x46, 0xc6, 0xd0, 0xca, 0x1a, 0xe0, 0x70, 0x3d, 0xa8, 0x8a, 0xf0, 0x16, 0xab, 0xcb,
+	0x5f, 0x7a, 0x03, 0xe4, 0x73, 0x78, 0xcf, 0x82, 0x8c, 0xd0, 0xe3, 0x4c, 0x5c, 0x68, 0xca, 0xfa,
+	0x1b, 0x9e, 0x04, 0xb8, 0x64, 0xc6, 0x96, 0xbe, 0x60, 0x9d, 0xf8, 0x69, 0xc8, 0x23, 0xc5, 0xa5,
+	0xea, 0x19, 0x9b, 0x1e, 0x41, 0x3f, 0xd7, 0x07, 0x37, 0xe0, 0x19, 0x38, 0xd7, 0x7f, 0xd3, 0x57,
+	0xee, 0xd2, 0xb5, 0x9d, 0x78, 0x05, 0x87, 0x1f, 0xd9, 0x46, 0xdf, 0x3f, 0xa6, 0x9f, 0x42, 0x2f,
+	0x32, 0xe0, 0x9c, 0x47, 0x37, 0x66, 0xd6, 0x02, 0x4e, 0x2f, 0x81, 0xd8, 0x05, 0xf0, 0x80, 0x26,
+	0xd0, 0xc0, 0x55, 0x52, 0x89, 0xc5, 0x4d, 0xd3, 0x6e, 0xfa, 0x15, 0xfa, 0xef, 0xef, 0x63, 0x9e,
+	0xa4, 0x9e, 0xbf, 0xf9, 0xc0, 0x7e, 0x69, 0x0a, 0x43, 0xa8, 0x27, 0x0a, 0xd0, 0x52, 0xca, 0xac,
+	0x52, 0x6a, 0x7b, 0x0f, 0x50, 0x7b, 0x03, 0x83, 0x7c, 0xe9, 0x7f, 0x25, 0x37, 0xfd, 0x5d, 0x83,
+	0x0e, 0x82, 0x0b, 0x96, 0xfc, 0x0c, 0x97, 0x8c, 0x5c, 0x40, 0x3d, 0x53, 0x3d, 0x19, 0x60, 0x56,
+	0xee, 0x55, 0x70, 0x8f, 0x76, 0x50, 0xec, 0x79, 0x0e, 0xfb, 0x52, 0xd3, 0x84, 0xa0, 0xdb, 0x7a,
+	0x0f, 0xdc, 0x7e, 0x0e, 0xc3, 0x84, 0x29, 0xd4, 0x94, 0xc8, 0x89, 0xf6, 0xda, 0x4f, 0x80, 0x3b,
+	0xc8, 0x83, 0x98, 0xf3, 0x1a, 0x9a, 0x5a, 0xf4, 0x64, 0x98, 0x9f, 0xc9, 0xf0, 0x7b, 0x52, 0xc0,
+	0xb7, 0xc9, 0x5a, 0xc4, 0x26, 0x79, 0xe7, 0x09, 0x30, 0xc9, 0x05, 0xb5, 0x9f, 0xc3, 0xbe, 0x12,
+	0x92, 0x1e, 0xcf, 0x92, 0xa3, 0x19, 0x2f, 0xa7, 0xa0, 0x19, 0xb4, 0x73, 0xda, 0x25, 0x27, 0x18,
+	0x55, 0xa6, 0xe8, 0xf2, 0x12, 0x6f, 0xc1, 0xb1, 0xa4, 0x40, 0x8e, 0x31, 0xa6, 0x28, 0x43, 0xd7,
+	0x2d, 0x73, 0x6d, 0x99, 0x4b, 0x41, 0x18, 0xe6, 0x96, 0x8c, 0x4c, 0x5b, 0x5b, 0x31, 0x64, 0x06,
+	0xb0, 0x5d, 0x78, 0x32, 0xc2, 0x90, 0x82, 0x88, 0xdc, 0xe3, 0x12, 0x0f, 0x96, 0x78, 0x07, 0x2d,
+	0x7b, 0x31, 0x89, 0xe6, 0x57, 0x22, 0x04, 0xf7, 0xa4, 0xd4, 0x97, 0x15, 0xfa, 0x56, 0x57, 0xbe,
+	0x97, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0xa7, 0x24, 0x9f, 0x52, 0xe9, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1285,19 +967,47 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AccountServiceClient interface {
+	// Status provides a string message describing the current state of the plugin.
+	// The returned state can include information on the business-level state (e.g. currently unlocked accounts) and
+	// process-level state (e.g. is plugin healthy)
 	Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error)
+	// Open initializes access to the plugin (establish connection, initialize resources).
+	// It should not unlock or decrypt account keys.
+	// The specific behaviour of Open will depend on the backend being implemented.
+	// It may be that Open is not required, in which case it should be implemented as a no-op.
+	// If Open is used to initialize access to the plugin it should be expected that Close must be called to release any
+	// allocated resources
 	Open(ctx context.Context, in *OpenRequest, opts ...grpc.CallOption) (*OpenResponse, error)
+	// Close frees up any resources initialized by Open.
+	// The specific behaviour of Open will depend on the backend being implemented.
+	// It may be that Open is not required, in which case it should be implemented as a no-op.
 	Close(ctx context.Context, in *CloseRequest, opts ...grpc.CallOption) (*CloseResponse, error)
+	// Accounts returns the currently available accounts stored in by the plugin.
 	Accounts(ctx context.Context, in *AccountsRequest, opts ...grpc.CallOption) (*AccountsResponse, error)
+	// Contains returns whether the provided account is known and available by the plugin backend.
 	Contains(ctx context.Context, in *ContainsRequest, opts ...grpc.CallOption) (*ContainsResponse, error)
-	SignHash(ctx context.Context, in *SignHashRequest, opts ...grpc.CallOption) (*SignHashResponse, error)
-	SignTx(ctx context.Context, in *SignTxRequest, opts ...grpc.CallOption) (*SignTxResponse, error)
-	SignHashWithPassphrase(ctx context.Context, in *SignHashWithPassphraseRequest, opts ...grpc.CallOption) (*SignHashResponse, error)
-	SignTxWithPassphrase(ctx context.Context, in *SignTxWithPassphraseRequest, opts ...grpc.CallOption) (*SignTxResponse, error)
-	GetEventStream(ctx context.Context, in *GetEventStreamRequest, opts ...grpc.CallOption) (AccountService_GetEventStreamClient, error)
+	// Sign signs the provided data with the specified account
+	Sign(ctx context.Context, in *SignRequest, opts ...grpc.CallOption) (*SignResponse, error)
+	// UnlockAndSign unlocks the specified account with the provided passphrase and uses it to sign the provided data.
+	// The account will be locked once the signing is complete.
+	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// passphrase parameter should be ignored when unlocking.
+	UnlockAndSign(ctx context.Context, in *UnlockAndSignRequest, opts ...grpc.CallOption) (*SignResponse, error)
+	// TimedUnlock unlocks the specified account with the provided passphrase for the duration provided.
+	// The duration is provided in nanoseconds.
+	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// passphrase parameter should be ignored when unlocking.
 	TimedUnlock(ctx context.Context, in *TimedUnlockRequest, opts ...grpc.CallOption) (*TimedUnlockResponse, error)
+	// Lock immediately locks the specified account, overriding any existing timed unlocks.
 	Lock(ctx context.Context, in *LockRequest, opts ...grpc.CallOption) (*LockResponse, error)
+	// NewAccount creates a new account and stores it in the backend.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
+	// by the plugin developer.
 	NewAccount(ctx context.Context, in *NewAccountRequest, opts ...grpc.CallOption) (*NewAccountResponse, error)
+	// ImportRawKey creates a new account from the provided hex-encoded private key and stores it in the backend.
+	// Validation of the hex string private key is not required as this handled by Quorum.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
+	// by the plugin developer.
 	ImportRawKey(ctx context.Context, in *ImportRawKeyRequest, opts ...grpc.CallOption) (*ImportRawKeyResponse, error)
 }
 
@@ -1354,72 +1064,22 @@ func (c *accountServiceClient) Contains(ctx context.Context, in *ContainsRequest
 	return out, nil
 }
 
-func (c *accountServiceClient) SignHash(ctx context.Context, in *SignHashRequest, opts ...grpc.CallOption) (*SignHashResponse, error) {
-	out := new(SignHashResponse)
-	err := c.cc.Invoke(ctx, "/proto.AccountService/SignHash", in, out, opts...)
+func (c *accountServiceClient) Sign(ctx context.Context, in *SignRequest, opts ...grpc.CallOption) (*SignResponse, error) {
+	out := new(SignResponse)
+	err := c.cc.Invoke(ctx, "/proto.AccountService/Sign", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountServiceClient) SignTx(ctx context.Context, in *SignTxRequest, opts ...grpc.CallOption) (*SignTxResponse, error) {
-	out := new(SignTxResponse)
-	err := c.cc.Invoke(ctx, "/proto.AccountService/SignTx", in, out, opts...)
+func (c *accountServiceClient) UnlockAndSign(ctx context.Context, in *UnlockAndSignRequest, opts ...grpc.CallOption) (*SignResponse, error) {
+	out := new(SignResponse)
+	err := c.cc.Invoke(ctx, "/proto.AccountService/UnlockAndSign", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
-}
-
-func (c *accountServiceClient) SignHashWithPassphrase(ctx context.Context, in *SignHashWithPassphraseRequest, opts ...grpc.CallOption) (*SignHashResponse, error) {
-	out := new(SignHashResponse)
-	err := c.cc.Invoke(ctx, "/proto.AccountService/SignHashWithPassphrase", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountServiceClient) SignTxWithPassphrase(ctx context.Context, in *SignTxWithPassphraseRequest, opts ...grpc.CallOption) (*SignTxResponse, error) {
-	out := new(SignTxResponse)
-	err := c.cc.Invoke(ctx, "/proto.AccountService/SignTxWithPassphrase", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountServiceClient) GetEventStream(ctx context.Context, in *GetEventStreamRequest, opts ...grpc.CallOption) (AccountService_GetEventStreamClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_AccountService_serviceDesc.Streams[0], "/proto.AccountService/GetEventStream", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &accountServiceGetEventStreamClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type AccountService_GetEventStreamClient interface {
-	Recv() (*GetEventStreamResponse, error)
-	grpc.ClientStream
-}
-
-type accountServiceGetEventStreamClient struct {
-	grpc.ClientStream
-}
-
-func (x *accountServiceGetEventStreamClient) Recv() (*GetEventStreamResponse, error) {
-	m := new(GetEventStreamResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func (c *accountServiceClient) TimedUnlock(ctx context.Context, in *TimedUnlockRequest, opts ...grpc.CallOption) (*TimedUnlockResponse, error) {
@@ -1460,19 +1120,47 @@ func (c *accountServiceClient) ImportRawKey(ctx context.Context, in *ImportRawKe
 
 // AccountServiceServer is the server API for AccountService service.
 type AccountServiceServer interface {
+	// Status provides a string message describing the current state of the plugin.
+	// The returned state can include information on the business-level state (e.g. currently unlocked accounts) and
+	// process-level state (e.g. is plugin healthy)
 	Status(context.Context, *StatusRequest) (*StatusResponse, error)
+	// Open initializes access to the plugin (establish connection, initialize resources).
+	// It should not unlock or decrypt account keys.
+	// The specific behaviour of Open will depend on the backend being implemented.
+	// It may be that Open is not required, in which case it should be implemented as a no-op.
+	// If Open is used to initialize access to the plugin it should be expected that Close must be called to release any
+	// allocated resources
 	Open(context.Context, *OpenRequest) (*OpenResponse, error)
+	// Close frees up any resources initialized by Open.
+	// The specific behaviour of Open will depend on the backend being implemented.
+	// It may be that Open is not required, in which case it should be implemented as a no-op.
 	Close(context.Context, *CloseRequest) (*CloseResponse, error)
+	// Accounts returns the currently available accounts stored in by the plugin.
 	Accounts(context.Context, *AccountsRequest) (*AccountsResponse, error)
+	// Contains returns whether the provided account is known and available by the plugin backend.
 	Contains(context.Context, *ContainsRequest) (*ContainsResponse, error)
-	SignHash(context.Context, *SignHashRequest) (*SignHashResponse, error)
-	SignTx(context.Context, *SignTxRequest) (*SignTxResponse, error)
-	SignHashWithPassphrase(context.Context, *SignHashWithPassphraseRequest) (*SignHashResponse, error)
-	SignTxWithPassphrase(context.Context, *SignTxWithPassphraseRequest) (*SignTxResponse, error)
-	GetEventStream(*GetEventStreamRequest, AccountService_GetEventStreamServer) error
+	// Sign signs the provided data with the specified account
+	Sign(context.Context, *SignRequest) (*SignResponse, error)
+	// UnlockAndSign unlocks the specified account with the provided passphrase and uses it to sign the provided data.
+	// The account will be locked once the signing is complete.
+	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// passphrase parameter should be ignored when unlocking.
+	UnlockAndSign(context.Context, *UnlockAndSignRequest) (*SignResponse, error)
+	// TimedUnlock unlocks the specified account with the provided passphrase for the duration provided.
+	// The duration is provided in nanoseconds.
+	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// passphrase parameter should be ignored when unlocking.
 	TimedUnlock(context.Context, *TimedUnlockRequest) (*TimedUnlockResponse, error)
+	// Lock immediately locks the specified account, overriding any existing timed unlocks.
 	Lock(context.Context, *LockRequest) (*LockResponse, error)
+	// NewAccount creates a new account and stores it in the backend.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
+	// by the plugin developer.
 	NewAccount(context.Context, *NewAccountRequest) (*NewAccountResponse, error)
+	// ImportRawKey creates a new account from the provided hex-encoded private key and stores it in the backend.
+	// Validation of the hex string private key is not required as this handled by Quorum.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
+	// by the plugin developer.
 	ImportRawKey(context.Context, *ImportRawKeyRequest) (*ImportRawKeyResponse, error)
 }
 
@@ -1495,20 +1183,11 @@ func (*UnimplementedAccountServiceServer) Accounts(ctx context.Context, req *Acc
 func (*UnimplementedAccountServiceServer) Contains(ctx context.Context, req *ContainsRequest) (*ContainsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Contains not implemented")
 }
-func (*UnimplementedAccountServiceServer) SignHash(ctx context.Context, req *SignHashRequest) (*SignHashResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignHash not implemented")
+func (*UnimplementedAccountServiceServer) Sign(ctx context.Context, req *SignRequest) (*SignResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Sign not implemented")
 }
-func (*UnimplementedAccountServiceServer) SignTx(ctx context.Context, req *SignTxRequest) (*SignTxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignTx not implemented")
-}
-func (*UnimplementedAccountServiceServer) SignHashWithPassphrase(ctx context.Context, req *SignHashWithPassphraseRequest) (*SignHashResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignHashWithPassphrase not implemented")
-}
-func (*UnimplementedAccountServiceServer) SignTxWithPassphrase(ctx context.Context, req *SignTxWithPassphraseRequest) (*SignTxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignTxWithPassphrase not implemented")
-}
-func (*UnimplementedAccountServiceServer) GetEventStream(req *GetEventStreamRequest, srv AccountService_GetEventStreamServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetEventStream not implemented")
+func (*UnimplementedAccountServiceServer) UnlockAndSign(ctx context.Context, req *UnlockAndSignRequest) (*SignResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnlockAndSign not implemented")
 }
 func (*UnimplementedAccountServiceServer) TimedUnlock(ctx context.Context, req *TimedUnlockRequest) (*TimedUnlockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TimedUnlock not implemented")
@@ -1617,97 +1296,40 @@ func _AccountService_Contains_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccountService_SignHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignHashRequest)
+func _AccountService_Sign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServiceServer).SignHash(ctx, in)
+		return srv.(AccountServiceServer).Sign(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.AccountService/SignHash",
+		FullMethod: "/proto.AccountService/Sign",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServiceServer).SignHash(ctx, req.(*SignHashRequest))
+		return srv.(AccountServiceServer).Sign(ctx, req.(*SignRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccountService_SignTx_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignTxRequest)
+func _AccountService_UnlockAndSign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnlockAndSignRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountServiceServer).SignTx(ctx, in)
+		return srv.(AccountServiceServer).UnlockAndSign(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.AccountService/SignTx",
+		FullMethod: "/proto.AccountService/UnlockAndSign",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServiceServer).SignTx(ctx, req.(*SignTxRequest))
+		return srv.(AccountServiceServer).UnlockAndSign(ctx, req.(*UnlockAndSignRequest))
 	}
 	return interceptor(ctx, in, info, handler)
-}
-
-func _AccountService_SignHashWithPassphrase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignHashWithPassphraseRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServiceServer).SignHashWithPassphrase(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.AccountService/SignHashWithPassphrase",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServiceServer).SignHashWithPassphrase(ctx, req.(*SignHashWithPassphraseRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccountService_SignTxWithPassphrase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignTxWithPassphraseRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServiceServer).SignTxWithPassphrase(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.AccountService/SignTxWithPassphrase",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServiceServer).SignTxWithPassphrase(ctx, req.(*SignTxWithPassphraseRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AccountService_GetEventStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetEventStreamRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(AccountServiceServer).GetEventStream(m, &accountServiceGetEventStreamServer{stream})
-}
-
-type AccountService_GetEventStreamServer interface {
-	Send(*GetEventStreamResponse) error
-	grpc.ServerStream
-}
-
-type accountServiceGetEventStreamServer struct {
-	grpc.ServerStream
-}
-
-func (x *accountServiceGetEventStreamServer) Send(m *GetEventStreamResponse) error {
-	return x.ServerStream.SendMsg(m)
 }
 
 func _AccountService_TimedUnlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1807,20 +1429,12 @@ var _AccountService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AccountService_Contains_Handler,
 		},
 		{
-			MethodName: "SignHash",
-			Handler:    _AccountService_SignHash_Handler,
+			MethodName: "Sign",
+			Handler:    _AccountService_Sign_Handler,
 		},
 		{
-			MethodName: "SignTx",
-			Handler:    _AccountService_SignTx_Handler,
-		},
-		{
-			MethodName: "SignHashWithPassphrase",
-			Handler:    _AccountService_SignHashWithPassphrase_Handler,
-		},
-		{
-			MethodName: "SignTxWithPassphrase",
-			Handler:    _AccountService_SignTxWithPassphrase_Handler,
+			MethodName: "UnlockAndSign",
+			Handler:    _AccountService_UnlockAndSign_Handler,
 		},
 		{
 			MethodName: "TimedUnlock",
@@ -1839,12 +1453,6 @@ var _AccountService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _AccountService_ImportRawKey_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetEventStream",
-			Handler:       _AccountService_GetEventStream_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "account.proto",
 }
