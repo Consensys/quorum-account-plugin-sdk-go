@@ -17,7 +17,7 @@ go get github.com/jpmorganchase/quorum-account-plugin-sdk-go/mock_proto
 
 [Quorum's pluggable architecture](https://docs.goquorum.com/en/latest/PluggableArchitecture/Overview/) allows for a Quorum node to be extended with additional functionality.
 
-Quorum's default account management functionality can be [extended with `account` plugins](https://docs.goquorum.com/en/latest/PluggableArchitecture/Plugins/account/Overview/).  
+Quorum's default account management functionality can be [extended with `account` plugins](https://docs.goquorum.com/en/latest/Account-Key-Management/Quorum/account-Plugins/Overview/).
 
 The communication between Quorum and an `account` plugin uses gRPC.
 
