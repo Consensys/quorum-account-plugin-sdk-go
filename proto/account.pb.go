@@ -968,46 +968,45 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AccountServiceClient interface {
 	// Status provides a string message describing the current state of the plugin.
-	// The returned state can include information on the business-level state (e.g. currently unlocked accounts) and
-	// process-level state (e.g. is plugin healthy)
+	// The content of the returned state is left to the developer's discretion.
+	// Examples include information on the business-level state (e.g. currently unlocked accounts) and process-level state (e.g. is plugin healthy)
 	Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error)
-	// Open initializes access to the plugin (establish connection, initialize resources).
+	// The specific behaviour of Open will depend on the backend being implemented.
+	// It may be that Open is not required in which case it should be implemented as a no-op.
 	// It should not unlock or decrypt account keys.
-	// The specific behaviour of Open will depend on the backend being implemented.
-	// It may be that Open is not required, in which case it should be implemented as a no-op.
-	// If Open is used to initialize access to the plugin it should be expected that Close must be called to release any
-	// allocated resources
+	// Open may be used to initialize resources or create a connection to the storage backend.
+	// It should be expected that any allocated resources or connections can be released by calling Close.
 	Open(ctx context.Context, in *OpenRequest, opts ...grpc.CallOption) (*OpenResponse, error)
-	// Close frees up any resources initialized by Open.
-	// The specific behaviour of Open will depend on the backend being implemented.
-	// It may be that Open is not required, in which case it should be implemented as a no-op.
+	// The specific behaviour of Close will depend on the backend being implemented.
+	// It may be that Close is not required, in which case it should be implemented as a no-op.
+	// Close releases any resources or connections allocated by Open.
 	Close(ctx context.Context, in *CloseRequest, opts ...grpc.CallOption) (*CloseResponse, error)
-	// Accounts returns the currently available accounts stored in by the plugin.
+	// Accounts returns the currently available accounts managed by the plugin.
 	Accounts(ctx context.Context, in *AccountsRequest, opts ...grpc.CallOption) (*AccountsResponse, error)
-	// Contains returns whether the provided account is known and available by the plugin backend.
+	// Contains returns whether the provided account is managed by the plugin.
 	Contains(ctx context.Context, in *ContainsRequest, opts ...grpc.CallOption) (*ContainsResponse, error)
 	// Sign signs the provided data with the specified account
 	Sign(ctx context.Context, in *SignRequest, opts ...grpc.CallOption) (*SignResponse, error)
 	// UnlockAndSign unlocks the specified account with the provided passphrase and uses it to sign the provided data.
 	// The account will be locked once the signing is complete.
-	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// It may be that the storage backend being implemented does not rely on passphrase-encryption, in which case the
 	// passphrase parameter should be ignored when unlocking.
 	UnlockAndSign(ctx context.Context, in *UnlockAndSignRequest, opts ...grpc.CallOption) (*SignResponse, error)
 	// TimedUnlock unlocks the specified account with the provided passphrase for the duration provided.
 	// The duration is provided in nanoseconds.
-	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// It may be that the storage backend being implemented does not rely on passphrase-encryption, in which case the
 	// passphrase parameter should be ignored when unlocking.
 	TimedUnlock(ctx context.Context, in *TimedUnlockRequest, opts ...grpc.CallOption) (*TimedUnlockResponse, error)
 	// Lock immediately locks the specified account, overriding any existing timed unlocks.
 	Lock(ctx context.Context, in *LockRequest, opts ...grpc.CallOption) (*LockResponse, error)
 	// NewAccount creates a new account and stores it in the backend.
-	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
-	// by the plugin developer.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the structure of the config
+	// to be left to the developer's discretion.
 	NewAccount(ctx context.Context, in *NewAccountRequest, opts ...grpc.CallOption) (*NewAccountResponse, error)
 	// ImportRawKey creates a new account from the provided hex-encoded private key and stores it in the backend.
 	// Validation of the hex string private key is not required as this handled by Quorum.
-	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
-	// by the plugin developer.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the structure of the config
+	// to be left to the developer's discretion.
 	ImportRawKey(ctx context.Context, in *ImportRawKeyRequest, opts ...grpc.CallOption) (*ImportRawKeyResponse, error)
 }
 
@@ -1121,46 +1120,45 @@ func (c *accountServiceClient) ImportRawKey(ctx context.Context, in *ImportRawKe
 // AccountServiceServer is the server API for AccountService service.
 type AccountServiceServer interface {
 	// Status provides a string message describing the current state of the plugin.
-	// The returned state can include information on the business-level state (e.g. currently unlocked accounts) and
-	// process-level state (e.g. is plugin healthy)
+	// The content of the returned state is left to the developer's discretion.
+	// Examples include information on the business-level state (e.g. currently unlocked accounts) and process-level state (e.g. is plugin healthy)
 	Status(context.Context, *StatusRequest) (*StatusResponse, error)
-	// Open initializes access to the plugin (establish connection, initialize resources).
+	// The specific behaviour of Open will depend on the backend being implemented.
+	// It may be that Open is not required in which case it should be implemented as a no-op.
 	// It should not unlock or decrypt account keys.
-	// The specific behaviour of Open will depend on the backend being implemented.
-	// It may be that Open is not required, in which case it should be implemented as a no-op.
-	// If Open is used to initialize access to the plugin it should be expected that Close must be called to release any
-	// allocated resources
+	// Open may be used to initialize resources or create a connection to the storage backend.
+	// It should be expected that any allocated resources or connections can be released by calling Close.
 	Open(context.Context, *OpenRequest) (*OpenResponse, error)
-	// Close frees up any resources initialized by Open.
-	// The specific behaviour of Open will depend on the backend being implemented.
-	// It may be that Open is not required, in which case it should be implemented as a no-op.
+	// The specific behaviour of Close will depend on the backend being implemented.
+	// It may be that Close is not required, in which case it should be implemented as a no-op.
+	// Close releases any resources or connections allocated by Open.
 	Close(context.Context, *CloseRequest) (*CloseResponse, error)
-	// Accounts returns the currently available accounts stored in by the plugin.
+	// Accounts returns the currently available accounts managed by the plugin.
 	Accounts(context.Context, *AccountsRequest) (*AccountsResponse, error)
-	// Contains returns whether the provided account is known and available by the plugin backend.
+	// Contains returns whether the provided account is managed by the plugin.
 	Contains(context.Context, *ContainsRequest) (*ContainsResponse, error)
 	// Sign signs the provided data with the specified account
 	Sign(context.Context, *SignRequest) (*SignResponse, error)
 	// UnlockAndSign unlocks the specified account with the provided passphrase and uses it to sign the provided data.
 	// The account will be locked once the signing is complete.
-	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// It may be that the storage backend being implemented does not rely on passphrase-encryption, in which case the
 	// passphrase parameter should be ignored when unlocking.
 	UnlockAndSign(context.Context, *UnlockAndSignRequest) (*SignResponse, error)
 	// TimedUnlock unlocks the specified account with the provided passphrase for the duration provided.
 	// The duration is provided in nanoseconds.
-	// It may be that the plugin backend being implemented does not rely on passphrase-encryption, in which case the
+	// It may be that the storage backend being implemented does not rely on passphrase-encryption, in which case the
 	// passphrase parameter should be ignored when unlocking.
 	TimedUnlock(context.Context, *TimedUnlockRequest) (*TimedUnlockResponse, error)
 	// Lock immediately locks the specified account, overriding any existing timed unlocks.
 	Lock(context.Context, *LockRequest) (*LockResponse, error)
 	// NewAccount creates a new account and stores it in the backend.
-	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
-	// by the plugin developer.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the structure of the config
+	// to be left to the developer's discretion.
 	NewAccount(context.Context, *NewAccountRequest) (*NewAccountResponse, error)
 	// ImportRawKey creates a new account from the provided hex-encoded private key and stores it in the backend.
 	// Validation of the hex string private key is not required as this handled by Quorum.
-	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the required config to be determined
-	// by the plugin developer.
+	// The newAccountConfig is provided as a generic json-encoded byte array to allow for the structure of the config
+	// to be left to the developer's discretion.
 	ImportRawKey(context.Context, *ImportRawKeyRequest) (*ImportRawKeyResponse, error)
 }
 
