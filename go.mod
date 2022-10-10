@@ -1,4 +1,4 @@
-module github.com/jpmorganchase/quorum-account-plugin-sdk-go
+module github.com/ConsenSys/quorum-account-plugin-sdk-go
 
 require (
 	github.com/golang/mock v1.3.1
